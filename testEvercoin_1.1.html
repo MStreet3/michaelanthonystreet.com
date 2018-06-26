@@ -1,0 +1,268 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="An Evercoin Cost Calculator" />
+    <title></title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!-- Latest font awesome-->
+    <link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script>
+
+        function main() {
+
+            var inputs = getInput();
+            // console.log(inputs);
+
+            $.when(
+                getGDAXPrice(inputs.gdaxProduct),
+                getCMCPrice(inputs.cmcProduct),
+                getECQuote(inputs.depositCoin, inputs.depositAmount, inputs.destinationCoin)
+            ).then(
+                function(gdax, cmc, evercoin){
+                    var gdaxPrice = gdax[0].price;
+                    var cmcPrice = cmc[0][0].price_usd;
+                    var buyAmount = evercoin[0].result.destinationAmount;
+                    var sellAmount = evercoin[0].result.depositAmount;
+                    var sig = evercoin[0].result.signature;
+                    var buyPrice = calculateBuyPrice(gdaxPrice, sellAmount, buyAmount);
+
+                    // Udate the HTML
+                    
+                    $("#depositPrice").html("$" + gdaxPrice);
+                    document.getElementById("destinationAmountHolder").value = buyAmount;
+                    $("#destinationCoinType").html(evercoin[0].result.destinationCoin);
+                    $("#evercoinPrice").html("$" + buyPrice);
+                    $("#cmcPrice").html("$" + cmcPrice);
+                    document.querySelector('#toHide').style.display = 'inline';
+                    document.querySelector('#toHide2').style.display = 'inline';
+
+                });
+        };
+
+        function getCoins() {
+            return $.ajax({
+                headers: {
+                    "EVERCOIN-API-KEY": "7f878074f09f4f673554f30be51b6a0d"
+                },
+                type: "get",
+                dataType: 'json',
+                contentType: 'application/json',
+                url: 'https://test.evercoin.com/v1/coins'
+            });
+        }
+        
+        function getInput() {
+            var depositCoin = $(".depositSelection").text();
+            var depositAmount = document.getElementById('depositAmount').value;
+            var destinationCoin = $('.destinationSelection').text();
+            var gdaxProduct = depositCoin + "-USD";
+            var currencies = {
+                "BTC": "bitcoin",
+                "LTC": "litecoin",
+                "ETH": "ethereum",
+                "XRP": "ripple",
+                "BCH": "bitcoin-cash",
+                "MIOTA": "iota",
+                "XMR": "monero",
+                "DASH": "dash",
+                "OMG":"omisego"
+            };
+            var cmcProduct = currencies[destinationCoin];
+            var inputs = {
+                "depositCoin": depositCoin,
+                "depositAmount": depositAmount,
+                "destinationCoin": destinationCoin,
+                "gdaxProduct": gdaxProduct,
+                "cmcProduct": cmcProduct
+            };
+            return inputs;
+        };
+
+        function getGDAXPrice(gdaxProduct) {
+            return $.ajax({
+                type: 'get',
+                dataType: 'json',
+                contentType: 'application/json',
+                url: 'https://api.gdax.com/products/' + gdaxProduct + "/ticker"
+            });
+        };
+
+        function getCMCPrice(cmcProduct) {
+
+            return $.ajax({
+                type: 'get',
+                dataType: 'json',
+                contentType: 'text/plain',
+                url: 'https://api.coinmarketcap.com/v1/ticker/' + cmcProduct + "/"
+            });
+
+        };
+
+        function getECQuote(depositCoin, depositAmount, destinationCoin) {
+            return $.ajax({
+                headers: {
+                    "EVERCOIN-API-KEY": "7f878074f09f4f673554f30be51b6a0d"
+                },
+                type: "post",
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "depositCoin": depositCoin,
+                    "destinationCoin": destinationCoin,
+                    "depositAmount": depositAmount
+                }),
+                url: 'https://test.evercoin.com/v1/price'
+            });
+        };
+
+        function calculateBuyPrice(sellPrice, sellAmount, buyAmount) {
+
+            return (sellPrice * sellAmount) / buyAmount;
+
+        };
+
+        $(document).ready(function () {
+
+            // console.log(getCoins());
+            document.querySelector('#toHide').style.display = 'none';
+            document.querySelector('#toHide2').style.display = 'none';
+            // manage menus
+            $('.depositSelection').html("Deposit Coin");
+            $('#gdax-options li a').on('click',
+                function () {
+                    var selText = $(this).text();
+                    $(".depositSelection").html(selText);
+                }
+            );
+
+            $('.destinationSelection').html("Destination Coin");
+            $('#evercoin-options li a').on('click',
+                function () {
+                    var selText = $(this).text();
+                    $(".destinationSelection").html(selText);
+                }
+            );
+
+
+            // listen for price update
+            $('#updater').on('click', main);
+
+
+        });
+    </script>
+</head>
+
+
+<body>
+    <div class="container">
+        <div class="page-header text-center">
+
+            <h1>Evercoin Cost Calculator</h1>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-xs-offset-1" id="toHide">
+                <label for="depositCoin" id="viewGdaxPrice">
+                    (GDAX Price = <span id="depositPrice"><i>{gdaxPrice}</i></span>)
+                </label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-6">
+                <input name="depositAmount" type="text" id="depositAmount"
+                       class="form-control" placeholder="Deposit Amount" /><br />
+            </div>
+
+            <div class="col-xs-6">
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                        <span class="depositSelection"></span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" id="gdax-options">
+                        <li><a href="#">BTC</a></li>
+                        <li><a href="#">BCH</a></li>
+                        <li><a href="#">ETH</a></li>
+                        <li><a href="#">LTC</a></li>
+                    </ul>
+                </div>
+                <!--<input name="depositCoin" type="text" maxlength="3" id="depositCoin"
+                       class="form-control" placeholder="Deposit Coin"/><br />-->
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-6">
+                <input name="destinationAmount" type="text" id="destinationAmountHolder"
+                       class="form-control" placeholder="Destination Amount" /><br />
+            </div>
+
+            <div class="col-xs-6">
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                        <span class="destinationSelection"></span> 
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" id="evercoin-options">
+                        <li><a href="#">BTC</a></li>
+                        <li><a href="#">BCH</a></li>
+                        <li><a href="#">ETH</a></li>
+                        <li><a href="#">LTC</a></li>
+                        <li><a href="#">XMR</a></li>
+                        <li><a href="#">ETC</a></li>
+                        <li><a href="#">DASH</a></li>
+                        <li><a href="#">XRP</a></li>
+                        <li><a href="#">ZEC</a></li>
+                        <li><a href="#">BTG</a></li>
+                        <li><a href="#">DOGE</a></li>
+                        <li><a href="#">DCR</a></li>
+                        <li><a href="#">WAVES</a></li>
+                        <li><a href="#">QTUM</a></li>
+                        <li><a href="#">ZEN</a></li>
+                        <li><a href="#">DGB</a></li>
+                        <li><a href="#">GNT</a></li>
+                        <li><a href="#">OMG</a></li>
+                        <li><a href="#">REP</a></li>
+                        <li><a href="#">BAT</a></li>
+                    </ul>
+                </div>
+                <!--<input name="destinationCoin" type="text" maxlength="3" id="destinationCoin"
+                       class="form-control" placeholder="Destination Coin" /><br />-->
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-8 col-xs-offset-2 text-center" id="toHide2">
+                <div id="resultSentence">
+                    <span id="evercoinPrice"><i>{estimatedBuyPrice}</i></span> per <span id="destinationCoinType"></span>.
+                </div>
+
+                <div id="cmcPriceDiv">
+                    (CoinMarketCap Price = <span id="cmcPrice"><i>{cmcPrice}</i></span>)
+                </div>
+            </div>
+           
+            <div class="col-xs-8 col-xs-offset-2 text-center">
+                <div class="links">
+                    <button class="btn btn-primary" id="updater">Update</button>
+                </div>
+            </div>
+        </div>    
+           
+    </div>
+
+</body>
+</html>
