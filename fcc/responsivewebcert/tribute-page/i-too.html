@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        
         <!-- jQuery library -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -26,8 +27,22 @@
                 margin:auto;
                 
             }
+            #img-caption{
+                max-width:50%;
+                margin:auto;
+            }
+            /*
             #img-div{
-                width:500px;
+                border-style:solid;
+                border-color:blue;
+            }
+                */
+            .myrow{
+                margin:auto;
+                max-width: 75%;
+             /* border-style:solid;
+                border-color:red; */
+                text-align:center;
             }
             a{
                 color:#66d9ef;
@@ -39,6 +54,7 @@
                 color:#f92672;
             }
 
+
         </style>
     </head>
     
@@ -46,24 +62,21 @@
                
         <div class="container" id="main">
             
-            <div class="">
-
+            <div class="myrow">
                 <h1 id="title">
                     Langston Hughes
                 </h1>
-
             </div>
             
-            <div class="">
-                
-                <div class="" id="img-div">
-                    <img id="image" src="./assets/img/Langston_Hughes_by_Carl_Van_Vechten_1936.jpg" class="" alt="A portrait of Langston Hughes taken by Carl Van Vechten."/>
+            <div class="myrow">
+                <div id="img-div">
+                    <img id="image" src="./assets/img/Langston_Hughes_by_Carl_Van_Vechten_1936.jpg" alt="A portrait of Langston Hughes taken by Carl Van Vechten."/>
                     <div class="caption" id="img-caption">
                         <p>A portrait of Langston Hughes taken by Carl Van Vechten (1936).</p>
                     </div>
                 </div>  
                 
-                <div class="" id="tribute-info">
+                <div id="tribute-info">
                     <h1><a href="https://www.poets.org/poetsorg/poem/i-too" target="_blank">I, Too</a></h1>
                     <p><b><a id ="tribute-link" href="https://en.wikipedia.org/wiki/Langston_Hughes" target="_blank">Langston Hughes</a>, 1902 - 1967</b></p>
                     <p>
