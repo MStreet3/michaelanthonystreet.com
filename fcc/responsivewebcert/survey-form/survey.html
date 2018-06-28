@@ -25,26 +25,70 @@
             <form id="survey-form">
                 <div id="input-fields">
                     <div>
-                        <input name="first_name" id="name" type="text" class="validate" required/>
                         <label for="first_name" id="name-label"><span class="asterisk">*</span>First Name</label>
+                        <input name="first_name" id="name" type="text" placeholder="Please enter your First Name." class="validate" required/>
                     </div>
                     <div>
-                        <input name="last_name" type="text" class="validate" required/>
                         <label for="last_name"><span class="asterisk">*</span>Last Name</label>
+                        <input name="last_name" type="text" placeholder="Please enter your Last Name." class="validate" required/>                        
                     </div>
                     <div>
-                        <input name="email" id="email" type="text" class="validate" />
-                        <label for="last_name" id="email-label">Email</label>
+                        <label for="last_name" type="email" id="email-label"><span class="asterisk">*</span>Email</label>
+                        <input name="email" id="email" type="email" placeholder="Please provide your e-mail address." class="validate" required/>                        
                     </div>
                     <div>
-                        <input name="cyber_staff" id="number" type="text" class="validate" />
                         <label for="cyber_staff" id="number-label">How many cyber trained personnel do you have on staff?</label>
+                        <input name="cyber_staff" placeholder="Enter a number." id="number" type="number" min="0" max="10000" class="validate" />
                     </div>
+                    <div>
+                        <label for="dropdown">What kinds of services are you looking for?</label>
+                        <select type="text" name="dropdown" id="dropdown">
+                            <option value="Role Based Training">Role Based Training</option>
+                            <option value="GDPR Compliance Services">GDPR Compliance Services</option>
+                            <option value="GLBA Compliance Services">GLBA Compliance Services</option>
+                            <option value="Vulnerability Assessment & Penetration Testing">Vulnerability Assessment &amp; Penetration Testing</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="comments">Additional Comments:</label>
+                        <textarea id="comments" name="msg" maxlength="140" rows="6"></textarea>
+                    </div>
+                    <fieldset>
+                        <legend>Where did you hear of us?</legend>
+                        <div>
+                            <label for="newsletter">Newsletter</label>
+                            <input type="checkbox" id="newsletter" name="marketing" value="Newsletter" />
+                        </div>
+                        <div>
+                            <label for="billboard">Billboard</label>
+                            <input type="checkbox" id="billboard" name="marketing" value="Billboard"/>
+                        </div>
+                        <div>
+                            <label for="google-ad">Google Ad</label>
+                            <input type="checkbox" id="google-ad" name="marketing" value="Google Ad" />
+                        </div>
+                        <div>
+                            <label for="other">Other</label>
+                            <input type="checkbox" id="other" name="marketing" value="Other" />
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>
+                            I would like to receive updates via the monthly newsletter.
+                        </legend>
+                        <div>
+                            <input type="radio" name="listserv" required value="yes" />
+                            <label for="listserv">Yes</label>
+                        </div>
+                        <div>
+                            <input type="radio" checked name="listserv" value="no" />
+                            <label for="listserv">No</label>
+                        </div>
+                    </fieldset>
                 </div>
                 <div id="button">
                     <button id="submit" type="submit" name="action">
                         Submit
-                        <i class="material-icons right">send</i>
                     </button>
                 </div>
             </form>
